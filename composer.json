@@ -1,0 +1,24 @@
+{
+  "name": "triallo/simonetti-acl",
+  "description": "Access Control List da Moveis Simonetti",
+  "license": "Private License",
+  "keywords": [
+    "RabbitMQ",
+    "Memcached",
+    "ZendFramework"
+  ],
+  "homepage": "http://auth.moveissimonetti.com.br",
+  "require": {
+    "php": ">=5.5",
+    "php-amqplib/php-amqplib": "2.5.*",
+    "zendframework/zend-cache": "~2.6",
+    "zendframework/zend-serializer": "~2.6",
+    "zendframework/zend-http": "~2.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Simonetti\\ACL\\": "src/ACL"
+    }
+  }
+}
+
