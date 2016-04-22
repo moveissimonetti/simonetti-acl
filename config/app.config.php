@@ -29,8 +29,7 @@ return [
             ]
         ],
         'plugins' => [
-            'Serializer',
-            'exception_handler' => ['throw_exceptions' => true]
+            'Serializer'
         ]
     ],
 ];
