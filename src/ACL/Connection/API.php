@@ -19,7 +19,12 @@ class API
      */
     private $config;
 
-    public function __construct(HttpClient $http, array $config)
+    /**
+     * @var
+     */
+    private $cache;
+
+    public function __construct(HttpClient $http, array $config, $cache)
     {
 
         if (!isset($config['simonetti_api']['endpoint'])) {
@@ -29,6 +34,8 @@ class API
         $this->config = $config;
 
         $this->http = $http;
+
+        $this->cache = $cache;
 
     }
 
@@ -63,6 +70,21 @@ class API
     public function isAllowed($resource, $token)
     {
         try {
+
+            if ($this->cache->hasItem($token)) {
+
+                // validacao da permissao via cache
+                $permissions = $this->cache->getItem($token);
+
+                if (\time() > $permissions['token']['expires']) {
+                    return false;
+                }
+
+                return \in_array($resource, $permissions['list']);
+
+            }
+
+            // validacao da permissao via endpoint da API
             $this->http->setUri(sprintf($this->config['simonetti_api']['endpoint']['validate'], $this->config['simonetti_api']['credentials']['client_id']))
                 ->setMethod(HttpRequest::METHOD_HEAD);
 
@@ -74,6 +96,7 @@ class API
             ])->send()->getStatusCode();
 
             return ($statusCode === 200);
+
 
         } catch (SimonettiACLException $e) {
             # TODO aplicar envio do erro para LOG

@@ -4,6 +4,7 @@ namespace Simonetti\ACL;
 
 use Zend\Http\Client as HttpClient;
 use Simonetti\ACL\Connection\API;
+use Zend\Cache\StorageFactory;
 
 class Client
 {
@@ -11,17 +12,19 @@ class Client
     static public function getInstance($options = null)
     {
 
-        # dados do arquivo de configuracao
+        // dados do arquivo de configuracao
         $config = require(__DIR__ . '/../../config/app.config.php');
 
         if ($options) {
-            $config['simonetti_api'] = $options;
+            $config = \array_merge_recursive($config, $options);
         }
 
-        # instancia do HTTPClient
+        // instancia do HTTPClient
         $httpClient = new HttpClient();
 
-        $api = new API($httpClient, $config);
+        $cache = StorageFactory::factory($config['cache']);
+
+        $api = new API($httpClient, $config, $cache);
 
         return $api;
 
