@@ -5,6 +5,7 @@ namespace Simonetti\ACL\Connection;
 use Zend\Http\Client as HttpClient;
 use Zend\Http\Request as HttpRequest;
 use Simonetti\ACL\Exception\SimonettiACLException;
+use Simonetti\ACL\Logger\Sender;
 
 class API
 {
@@ -24,7 +25,12 @@ class API
      */
     private $cache;
 
-    public function __construct(HttpClient $http, array $config, $cache)
+    /**
+     * @var
+     */
+    private $logger;
+
+    public function __construct(HttpClient $http, array $config, $cache, Sender $logger)
     {
 
         if (!isset($config['simonetti_api']['endpoint'])) {
@@ -36,6 +42,8 @@ class API
         $this->http = $http;
 
         $this->cache = $cache;
+
+        $this->logger = $logger;
 
     }
 
@@ -77,10 +85,32 @@ class API
                 $permissions = $this->cache->getItem($token);
 
                 if (\time() > $permissions['token']['expires']) {
+
+                    $this->logger->sendMessage([
+                        'type' => 'warn',
+                        'content' => [
+                            'client' => $permissions['token']['client_id'],
+                            'user' => $permissions['token']['user_id'],
+                            'resource' => $resource,
+                            'result' => false
+                        ]
+                    ]);
                     return false;
                 }
 
-                return \in_array($resource, $permissions['list']);
+                $result = \in_array($resource, $permissions['list']);
+
+                $this->logger->sendMessage([
+                    'type' => 'info',
+                    'content' => [
+                        'client' => $permissions['token']['client_id'],
+                        'user' => $permissions['token']['user_id'],
+                        'resource' => $resource,
+                        'result' => $result
+                    ]
+                ]);
+
+                return $result;
 
             }
 
@@ -95,11 +125,22 @@ class API
                 'x-resource' => $resource,
             ])->send()->getStatusCode();
 
+
             return ($statusCode === 200);
 
 
         } catch (SimonettiACLException $e) {
-            # TODO aplicar envio do erro para LOG
+
+            $this->logger->sendMessage([
+                'type' => 'err',
+                'content' => [
+                    'error' => $e->getMessage(),
+                    'errorCode' => 'SIMONETTI_ACL_EXCEPTION',
+                    'resource' => $resource,
+                    'result' => false
+                ]
+            ]);
+
             return false;
         }
     }

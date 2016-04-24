@@ -2,23 +2,18 @@
 
 namespace Simonetti\ACL\Logger;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
-class Sender 
+class Sender
 {
 
     protected $connection;
     protected $channel;
 
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __construct(array $config)
     {
-        $config = $serviceLocator->get('config');
         $this->openConnection($config);
-
-        return $this;
-
     }
 
     public function sendMessage(array $message)
