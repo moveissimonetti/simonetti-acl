@@ -87,7 +87,7 @@ class API
                 if (\time() > $permissions['token']['expires']) {
 
                     $this->logger->sendMessage([
-                        'type' => 'warn',
+                        'type' => 4,
                         'content' => [
                             'client' => $permissions['token']['client_id'],
                             'user' => $permissions['token']['user_id'],
@@ -101,7 +101,7 @@ class API
                 $result = \in_array($resource, $permissions['list']);
 
                 $this->logger->sendMessage([
-                    'type' => 'info',
+                    'type' => 6,
                     'content' => [
                         'client' => $permissions['token']['client_id'],
                         'user' => $permissions['token']['user_id'],
@@ -130,7 +130,7 @@ class API
             $result = ($statusCode === 200);
 
             $this->logger->sendMessage([
-                'type' => 'info',
+                'type' => 6,
                 'content' => [
                     'client' => null,
                     'user' => null,
@@ -144,7 +144,7 @@ class API
         } catch (SimonettiACLException $e) {
 
             $this->logger->sendMessage([
-                'type' => 'err',
+                'type' => 3,
                 'content' => [
                     'error' => $e->getMessage(),
                     'errorCode' => 'SIMONETTI_ACL_EXCEPTION',
