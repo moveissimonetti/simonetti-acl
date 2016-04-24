@@ -106,7 +106,8 @@ class API
                         'client' => $permissions['token']['client_id'],
                         'user' => $permissions['token']['user_id'],
                         'resource' => $resource,
-                        'result' => $result
+                        'result' => $result,
+                        'via' => 'cache'
                     ]
                 ]);
 
@@ -126,7 +127,18 @@ class API
             ])->send()->getStatusCode();
 
 
-            return ($statusCode === 200);
+            $result = ($statusCode === 200);
+
+            $this->logger->sendMessage([
+                'type' => 'info',
+                'content' => [
+                    'client' => null,
+                    'user' => null,
+                    'resource' => $resource,
+                    'result' => $result,
+                    'via' => 'API'
+                ]
+            ]);
 
 
         } catch (SimonettiACLException $e) {
@@ -137,7 +149,7 @@ class API
                     'error' => $e->getMessage(),
                     'errorCode' => 'SIMONETTI_ACL_EXCEPTION',
                     'resource' => $resource,
-                    'result' => false
+                    'result' => false,
                 ]
             ]);
 
