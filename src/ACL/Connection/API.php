@@ -79,7 +79,7 @@ class API
     {
         try {
 
-            if ($this->cache->hasItem($token)) {
+            if ($token && $this->cache->hasItem($token)) {
 
                 // validacao da permissao via cache
                 $permissions = $this->cache->getItem($token);
@@ -125,7 +125,6 @@ class API
                 'Authorization' => 'Bearer ' . $token,
                 'x-resource' => $resource,
             ])->send()->getStatusCode();
-
 
             $result = ($statusCode === 200);
 
