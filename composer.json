@@ -10,7 +10,7 @@
   "homepage": "http://auth.moveissimonetti.com.br",
   "require": {
     "php": ">=5.5",
-    "php-amqplib/php-amqplib": "2.5.*",
+    "php-amqplib/php-amqplib": "~2.5",
     "zendframework/zend-cache": "~2.6",
     "zendframework/zend-serializer": "~2.6",
     "zendframework/zend-http": "~2.5"
